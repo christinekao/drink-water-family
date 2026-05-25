@@ -179,12 +179,12 @@ function saveState() {
   writeSavedState(state);
 }
 
-function setConnectionStatus(online) {
+function setConnectionStatus() {
   const chip = document.querySelector("#connectionStatus");
   if (!chip) return;
-  chip.classList.toggle("is-online", online);
-  chip.classList.toggle("is-offline", !online);
-  chip.textContent = online ? "家庭同步" : (canUseServer ? "本機模式" : "本機預覽");
+  chip.classList.toggle("is-online", canUseServer);
+  chip.classList.toggle("is-offline", !canUseServer);
+  chip.textContent = canUseServer ? "家庭同步" : "本機預覽";
 }
 
 function applyRemoteState(nextState) {
@@ -215,12 +215,12 @@ async function hydrateFromServer() {
   try {
     const remoteState = await requestJson("/api/state");
     serverAvailable = true;
-    setConnectionStatus(true);
+    setConnectionStatus();
     applyRemoteState(remoteState);
     render();
   } catch (error) {
     serverAvailable = false;
-    setConnectionStatus(false);
+    setConnectionStatus();
     console.warn("Using local-only mode because the family server is unavailable.", error);
   }
 }
@@ -234,7 +234,7 @@ async function refreshFromServer() {
     render();
   } catch (error) {
     console.warn("Could not refresh family data.", error);
-    setConnectionStatus(false);
+    setConnectionStatus();
   }
 }
 
@@ -251,9 +251,25 @@ function totalForDate(date) {
   return state.entries.filter((entry) => validMemberIds.has(entry.memberId) && entry.date === date).length;
 }
 
-function totalSince(date) {
+function totalBetween(startDate, endDate) {
   const validMemberIds = new Set(state.members.map((member) => member.id));
-  return state.entries.filter((entry) => validMemberIds.has(entry.memberId) && entry.date >= date).length;
+  return state.entries.filter((entry) => (
+    validMemberIds.has(entry.memberId) &&
+    entry.date >= startDate &&
+    entry.date <= endDate
+  )).length;
+}
+
+function monthCostPeriod(date) {
+  const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+  const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const firstCostDate = new Date(`${costStartDate}T00:00:00`);
+  const start = monthStart < firstCostDate ? firstCostDate : monthStart;
+  return {
+    start: dateKey(start),
+    end: dateKey(monthEnd),
+    label: `${start.getMonth() + 1}/${start.getDate()} - ${monthEnd.getMonth() + 1}/${monthEnd.getDate()}`
+  };
 }
 
 function selectedMember() {
@@ -268,7 +284,7 @@ function memberStats(member) {
 }
 
 function render() {
-  setConnectionStatus(serverAvailable);
+  setConnectionStatus();
   renderTabs();
   renderHome();
   renderDashboard();
@@ -317,27 +333,24 @@ function renderDashboard() {
   const totalMl = stats.reduce((sum, item) => sum + item.ml, 0);
   const champion = [...stats].sort((a, b) => b.bottles - a.bottles)[0];
   const needsWater = [...stats].sort((a, b) => b.remaining - a.remaining)[0];
-  const costBottles = totalSince(costStartDate);
+  const costPeriod = monthCostPeriod(new Date(`${todayKey}T00:00:00`));
+  const costBottles = totalBetween(costPeriod.start, costPeriod.end);
   const costPerBottle = costBottles > 0 ? waterTotalCost / costBottles : null;
 
   document.querySelector("#familyTotal").textContent = `${totalMl} ml`;
   document.querySelector("#champion").innerHTML = `冠軍 ${champion ? `<b><span class="person-mark">👑</span>${champion.member.name}</b>` : "-"}`;
   document.querySelector("#needsWater").innerHTML = `補水提醒 ${needsWater ? `<b><span class="person-mark">💧</span>${needsWater.member.name}</b>` : "-"}`;
+  document.querySelector("#costPeriodLabel").textContent = `水成本進度（${costPeriod.label}）`;
   document.querySelector("#costPerBottle").textContent = costPerBottle === null ? "-- 元 / 瓶" : `${formatCost(costPerBottle)} 元 / 瓶`;
   document.querySelector("#costNote").textContent = `${waterTotalCost} 元 / 累計 ${costBottles} 瓶 · ${costBottles * bottleMl} ml`;
 
   document.querySelector("#dashboardList").innerHTML = stats.map((item) => {
-    const marks = [
-      champion && item.member.id === champion.member.id ? "👑" : "",
-      needsWater && item.member.id === needsWater.member.id ? "💧" : ""
-    ].filter(Boolean).map((mark) => `<span class="person-mark">${mark}</span>`).join("");
-
     return `
       <article class="member-row">
         <div class="member-row-main">
           <div class="mini-avatar">${avatarMarkup(item.member.avatar, item.member.name, "mini-avatar-image")}</div>
           <div>
-            <div class="member-name">${marks}${item.member.name}</div>
+            <div class="member-name">${item.member.name}</div>
             <div class="member-meta">${item.bottles}/${item.member.goal} 瓶 · ${item.ml} ml · 還差 ${item.remaining} 瓶</div>
           </div>
         </div>
