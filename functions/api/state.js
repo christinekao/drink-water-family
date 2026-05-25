@@ -1,7 +1,5 @@
-import { ensureSchema, json, readState } from "./_shared.js";
+import { handleApi, json, readState } from "./_shared.js";
 
 export async function onRequestGet(context) {
-  await ensureSchema(context.env.DB);
-  return json(await readState(context.env.DB));
+  return handleApi(context, async (db) => json(await readState(db)));
 }
-

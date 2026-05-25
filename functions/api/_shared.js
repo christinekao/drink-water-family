@@ -17,28 +17,46 @@ function json(data, init = {}) {
   });
 }
 
+function makeId() {
+  if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+
+function requireDb(db) {
+  if (!db || typeof db.prepare !== "function") {
+    throw new Error("D1 binding DB is not available to this Pages Function.");
+  }
+}
+
 async function ensureSchema(db) {
-  await db.exec(`
-    PRAGMA foreign_keys = ON;
-    CREATE TABLE IF NOT EXISTS members (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      avatar TEXT NOT NULL,
-      goal INTEGER NOT NULL,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE TABLE IF NOT EXISTS entries (
-      id TEXT PRIMARY KEY,
-      member_id TEXT NOT NULL,
-      date TEXT NOT NULL,
-      amount_ml INTEGER NOT NULL DEFAULT 500,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(member_id) REFERENCES members(id) ON DELETE CASCADE
-    );
-    CREATE INDEX IF NOT EXISTS idx_entries_member_date ON entries(member_id, date);
-    CREATE INDEX IF NOT EXISTS idx_entries_date ON entries(date);
-  `);
+  requireDb(db);
+
+  const statements = [
+    "CREATE TABLE IF NOT EXISTS members (" +
+      "id TEXT PRIMARY KEY," +
+      "name TEXT NOT NULL," +
+      "avatar TEXT NOT NULL," +
+      "goal INTEGER NOT NULL," +
+      "created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+      "updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+    ")",
+    "CREATE TABLE IF NOT EXISTS entries (" +
+      "id TEXT PRIMARY KEY," +
+      "member_id TEXT NOT NULL," +
+      "date TEXT NOT NULL," +
+      "amount_ml INTEGER NOT NULL DEFAULT 500," +
+      "created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+      "FOREIGN KEY(member_id) REFERENCES members(id) ON DELETE CASCADE" +
+    ")",
+    "CREATE INDEX IF NOT EXISTS idx_entries_member_date ON entries(member_id, date)",
+    "CREATE INDEX IF NOT EXISTS idx_entries_date ON entries(date)"
+  ];
+
+  for (const statement of statements) {
+    await db.exec(statement);
+  }
 
   const row = await db.prepare("SELECT COUNT(*) AS count FROM members").first();
   if (!row || row.count > 0) return;
@@ -46,7 +64,21 @@ async function ensureSchema(db) {
   for (const member of DEFAULT_MEMBERS) {
     await db.prepare(
       "INSERT INTO members (id, name, avatar, goal) VALUES (?, ?, ?, ?)"
-    ).bind(crypto.randomUUID(), member.name, member.avatar, member.goal).run();
+    ).bind(makeId(), member.name, member.avatar, member.goal).run();
+  }
+}
+
+async function handleApi(context, handler) {
+  try {
+    const db = context.env.DB;
+    await ensureSchema(db);
+    return await handler(db);
+  } catch (error) {
+    return json({
+      error: "Pages Function failed",
+      message: error && error.message ? error.message : String(error),
+      hasDbBinding: Boolean(context.env && context.env.DB)
+    }, { status: 500 });
   }
 }
 
@@ -79,7 +111,8 @@ async function replaceState(db, payload) {
   const entries = payload && Array.isArray(payload.entries) ? payload.entries : [];
   if (members.length === 0) return;
 
-  await db.exec("DELETE FROM entries; DELETE FROM members;");
+  await db.exec("DELETE FROM entries");
+  await db.exec("DELETE FROM members");
   for (const member of members) {
     await db.prepare(
       "INSERT INTO members (id, name, avatar, goal) VALUES (?, ?, ?, ?)"
@@ -92,14 +125,14 @@ async function replaceState(db, payload) {
     const memberId = validMemberIds.has(entry.memberId) ? entry.memberId : fallbackMemberId;
     await db.prepare(
       "INSERT INTO entries (id, member_id, date, amount_ml) VALUES (?, ?, ?, ?)"
-    ).bind(entry.id || crypto.randomUUID(), memberId, entry.date, Number(entry.amountMl || BOTTLE_ML)).run();
+    ).bind(entry.id || makeId(), memberId, entry.date, Number(entry.amountMl || BOTTLE_ML)).run();
   }
 }
 
 async function addDrink(db, payload) {
   await db.prepare(
     "INSERT INTO entries (id, member_id, date, amount_ml) VALUES (?, ?, ?, ?)"
-  ).bind(crypto.randomUUID(), payload.memberId, payload.date, BOTTLE_ML).run();
+  ).bind(makeId(), payload.memberId, payload.date, BOTTLE_ML).run();
 }
 
 async function setHistory(db, payload) {
@@ -114,12 +147,12 @@ async function setHistory(db, payload) {
   for (let index = 0; index < bottleCount; index += 1) {
     await db.prepare(
       "INSERT INTO entries (id, member_id, date, amount_ml) VALUES (?, ?, ?, ?)"
-    ).bind(crypto.randomUUID(), memberId, date, BOTTLE_ML).run();
+    ).bind(makeId(), memberId, date, BOTTLE_ML).run();
   }
 }
 
 async function createMember(db, payload) {
-  const memberId = crypto.randomUUID();
+  const memberId = makeId();
   await db.prepare(
     "INSERT INTO members (id, name, avatar, goal) VALUES (?, ?, ?, ?)"
   ).bind(memberId, payload.name, payload.avatar, Number(payload.goal || 0)).run();
@@ -140,6 +173,7 @@ export {
   addDrink,
   createMember,
   ensureSchema,
+  handleApi,
   json,
   parseJson,
   readState,
