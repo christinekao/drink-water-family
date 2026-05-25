@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="手繪水豚頭像">
+  <g fill="none" stroke="#191919" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 95c0-38 23-65 54-65 28 0 48 23 48 55 0 33-24 56-57 56-28 0-45-17-45-46z" fill="#c8905b" stroke-width="6"/>
+    <path d="M43 63c8-20 24-31 43-31 20 0 37 13 44 34-21-8-60-8-87-3z" fill="#d6a06d" stroke-width="5"/>
+    <path d="M65 37l-7 18" stroke-width="4"/>
+    <path d="M111 39l7 18" stroke-width="4"/>
+    <path d="M54 79c8-6 17-8 25-5" stroke-width="4"/>
+    <path d="M103 79c6-3 13-2 20 4" stroke-width="4"/>
+    <circle cx="66" cy="86" r="3" fill="#191919" stroke-width="4"/>
+    <circle cx="110" cy="86" r="3" fill="#191919" stroke-width="4"/>
+    <path d="M78 100c8 5 18 5 26 0" stroke-width="4"/>
+    <path d="M80 114c8 6 20 6 29 0" stroke-width="4"/>
+    <path d="M37 102c6 5 13 7 20 5" stroke="#8f633d" stroke-width="3"/>
+    <path d="M124 101c-6 5-13 7-20 5" stroke="#8f633d" stroke-width="3"/>
+  </g>
+</svg>

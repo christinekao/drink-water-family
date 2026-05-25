@@ -1,0 +1,8 @@
+.DS_Store
+dist/
+prototype/drink_water.sqlite3
+prototype/avatar-gallery.html
+prototype/assets/imported-avatars/
+original-animal-sheet.png
+ChatGPT Image *.png
+

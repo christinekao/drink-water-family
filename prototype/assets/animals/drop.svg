@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="手繪小水滴頭像">
+  <g fill="none" stroke="#191919" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M80 22c22 31 44 61 44 88 0 28-18 45-44 45s-44-17-44-45c0-27 22-57 44-88z" fill="#67c8f2" stroke-width="6"/>
+    <circle cx="64" cy="104" r="5" fill="#191919" stroke-width="4"/>
+    <circle cx="96" cy="104" r="5" fill="#191919" stroke-width="4"/>
+    <path d="M68 120c7 6 17 6 24 0" stroke-width="5"/>
+    <path d="M66 57c4-10 10-18 17-27" stroke="#ffffff" stroke-width="7" opacity=".75"/>
+  </g>
+</svg>

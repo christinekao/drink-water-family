@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fff4cf">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="補水基地">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>水分補給基地</title>
+    <link rel="stylesheet" href="./styles.css?v=ui-avatar-color-gap-1">
+  </head>
+  <body>
+    <main class="phone-shell" aria-label="水分補給基地">
+      <section class="screen active" id="homeScreen">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow eyebrow-pill">DRINK WATER BASE JEXER</p>
+            <p class="eyebrow">家人的每日補水基地</p>
+            <h1>水分補給基地</h1>
+          </div>
+          <div class="top-actions">
+            <span class="status-chip" id="connectionStatus">連線中…</span>
+            <button class="icon-button" id="openMembers" aria-label="管理家人">＋</button>
+          </div>
+        </header>
+
+        <div class="member-tabs" id="memberTabs"></div>
+
+        <section class="hero-card">
+          <div class="avatar-bubble" id="homeAvatar">水</div>
+          <div class="hero-copy">
+            <p class="hero-label">TODAY'S BOTTLES</p>
+            <p class="nudge" id="nudgeText">今天也一起把水喝好。</p>
+          </div>
+        </section>
+
+        <section class="progress-card">
+          <p class="big-count"><span id="todayBottles">0</span> / <span id="goalBottles">5</span> 瓶</p>
+          <p class="ml-count"><span id="todayMl">0</span> / <span id="goalMl">2500</span> ml</p>
+          <div class="progress-track">
+            <div class="progress-fill" id="homeProgress"></div>
+          </div>
+          <p class="remaining" id="remainingText">還差 5 瓶</p>
+        </section>
+
+        <button class="drink-button" id="drinkButton">＋1 瓶</button>
+      </section>
+
+      <section class="screen" id="dashboardScreen">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow eyebrow-pill">FAMILY LOG</p>
+            <h1>全家進度</h1>
+          </div>
+        </header>
+
+        <section class="summary-card">
+          <p>今日家庭總喝水量</p>
+          <strong id="familyTotal">0 ml</strong>
+          <div class="summary-grid">
+            <span id="champion">冠軍 -</span>
+            <span id="needsWater">補水提醒 -</span>
+          </div>
+        </section>
+
+        <section class="summary-card cost-card">
+          <p>水成本進度（5/22 起）</p>
+          <strong id="costPerBottle">-- 元 / 瓶</strong>
+          <span class="cost-note" id="costNote">210 元 / 累計 0 瓶</span>
+        </section>
+
+        <section class="member-list" id="dashboardList"></section>
+
+        <section class="chart-card">
+          <div class="chart-title">
+            <strong>5/22 起統計</strong>
+            <span>瓶數</span>
+          </div>
+          <div class="bars" id="weekBars"></div>
+        </section>
+      </section>
+
+      <section class="screen" id="historyScreen">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow eyebrow-pill">HISTORY</p>
+            <h1>5/22 起紀錄</h1>
+          </div>
+        </header>
+        <p class="helper-text">點「編輯」可以幫家人補登或修正瓶數。</p>
+        <section class="history-list" id="historyList"></section>
+      </section>
+
+      <section class="screen" id="membersScreen">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow eyebrow-pill">MEMBERS</p>
+            <h1>家人</h1>
+          </div>
+          <button class="icon-button" id="addMember" aria-label="新增家人">＋</button>
+        </header>
+        <section class="member-list" id="membersList"></section>
+      </section>
+
+      <nav class="tabbar" aria-label="主要分頁">
+        <button class="tab active" data-tab="homeScreen">首頁</button>
+        <button class="tab" data-tab="dashboardScreen">全家</button>
+        <button class="tab" data-tab="historyScreen">紀錄</button>
+        <button class="tab" data-tab="membersScreen">家人</button>
+      </nav>
+    </main>
+
+    <dialog id="memberDialog">
+      <form method="dialog" class="dialog-card">
+        <h2 id="dialogTitle">新增家人</h2>
+        <label>
+          名字
+          <input id="memberName" maxlength="12" placeholder="例如：珍珍">
+        </label>
+        <label>
+          動物頭像
+          <select id="memberAvatar">
+            <option value="capybara">水豚</option>
+            <option value="bunny">兔兔</option>
+            <option value="sheep">綿羊</option>
+            <option value="tiger">老虎</option>
+            <option value="crocodile">鱷魚</option>
+            <option value="cat">小貓</option>
+          </select>
+        </label>
+        <label>
+          每日目標
+          <div class="stepper">
+            <button type="button" id="minusGoal">−</button>
+            <strong><span id="goalValue">4</span> 瓶</strong>
+            <button type="button" id="plusGoal">＋</button>
+          </div>
+          <small id="goalMlPreview">等於 2000 ml</small>
+        </label>
+        <div class="dialog-actions">
+          <button value="cancel" class="secondary">取消</button>
+          <button type="button" id="saveMember" class="primary">儲存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="historyDialog">
+      <form method="dialog" class="dialog-card">
+        <h2 id="historyDialogTitle">編輯紀錄</h2>
+        <label>
+          家人
+          <select id="historyMember"></select>
+        </label>
+        <label>
+          當天瓶數
+          <div class="stepper">
+            <button type="button" id="minusHistory">−</button>
+            <strong><span id="historyBottleValue">0</span> 瓶</strong>
+            <button type="button" id="plusHistory">＋</button>
+          </div>
+          <small id="historyMlPreview">等於 0 ml</small>
+        </label>
+        <div class="dialog-actions">
+          <button value="cancel" class="secondary">取消</button>
+          <button type="button" id="saveHistory" class="primary">儲存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

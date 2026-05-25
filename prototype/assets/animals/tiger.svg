@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="手繪老虎頭像">
+  <g fill="none" stroke="#191919" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 92c0-35 22-61 51-61s51 26 51 61c0 31-21 50-51 50s-51-19-51-50z" fill="#f5a23d" stroke-width="6"/>
+    <path d="M40 55L27 33c16 0 27 7 34 19" fill="#f5a23d" stroke-width="5"/>
+    <path d="M120 55l13-22c-16 0-27 7-34 19" fill="#f5a23d" stroke-width="5"/>
+    <path d="M61 106c8-8 34-8 42 0 0 20-42 20-42 0z" fill="#fff4df" stroke-width="5"/>
+    <circle cx="63" cy="86" r="5" fill="#191919" stroke-width="4"/>
+    <circle cx="101" cy="86" r="5" fill="#191919" stroke-width="4"/>
+    <path d="M76 101c4 3 8 3 12 0" stroke-width="4"/>
+    <path d="M69 118c8 5 22 5 30 0" stroke-width="4"/>
+    <path d="M81 34v32" stroke-width="5"/>
+    <path d="M52 66l-18-9" stroke-width="5"/>
+    <path d="M55 82l-22 2" stroke-width="5"/>
+    <path d="M110 66l18-9" stroke-width="5"/>
+    <path d="M107 82l22 2" stroke-width="5"/>
+    <path d="M68 40l-10 22" stroke-width="5"/>
+    <path d="M94 40l10 22" stroke-width="5"/>
+  </g>
+</svg>

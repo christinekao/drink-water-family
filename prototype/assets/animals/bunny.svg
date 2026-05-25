@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="手繪兔兔頭像">
+  <g fill="none" stroke="#191919" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M54 62C41 37 40 17 51 10c11-6 25 13 29 42" fill="#fff8ea" stroke-width="6"/>
+    <path d="M106 62c13-25 14-45 3-52-11-6-25 13-29 42" fill="#fff8ea" stroke-width="6"/>
+    <path d="M45 88c0-31 17-53 39-53s39 22 39 53c0 32-16 51-39 51s-39-19-39-51z" fill="#fff8ea" stroke-width="6"/>
+    <path d="M58 31c-2-8-2-13 0-16" stroke="#f3a7b6" stroke-width="5"/>
+    <path d="M101 31c2-8 2-13 0-16" stroke="#f3a7b6" stroke-width="5"/>
+    <circle cx="68" cy="85" r="4" fill="#191919" stroke-width="4"/>
+    <circle cx="99" cy="85" r="4" fill="#191919" stroke-width="4"/>
+    <path d="M79 98c4 3 8 3 12 0" stroke-width="4"/>
+    <path d="M69 112c8 6 22 6 30 0" stroke-width="4"/>
+    <path d="M54 98c5 3 10 4 15 3" stroke="#f3a7b6" stroke-width="3"/>
+    <path d="M114 98c-5 3-10 4-15 3" stroke="#f3a7b6" stroke-width="3"/>
+  </g>
+</svg>
