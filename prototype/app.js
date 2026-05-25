@@ -321,23 +321,30 @@ function renderDashboard() {
   const costPerBottle = costBottles > 0 ? waterTotalCost / costBottles : null;
 
   document.querySelector("#familyTotal").textContent = `${totalMl} ml`;
-  document.querySelector("#champion").textContent = `冠軍 ${champion ? champion.member.name : "-"}`;
-  document.querySelector("#needsWater").textContent = `補水提醒 ${needsWater ? needsWater.member.name : "-"}`;
+  document.querySelector("#champion").innerHTML = `冠軍 ${champion ? `<b><span class="person-mark">👑</span>${champion.member.name}</b>` : "-"}`;
+  document.querySelector("#needsWater").innerHTML = `補水提醒 ${needsWater ? `<b><span class="person-mark">💧</span>${needsWater.member.name}</b>` : "-"}`;
   document.querySelector("#costPerBottle").textContent = costPerBottle === null ? "-- 元 / 瓶" : `${formatCost(costPerBottle)} 元 / 瓶`;
   document.querySelector("#costNote").textContent = `${waterTotalCost} 元 / 累計 ${costBottles} 瓶 · ${costBottles * bottleMl} ml`;
 
-  document.querySelector("#dashboardList").innerHTML = stats.map((item) => `
-    <article class="member-row">
-      <div class="member-row-main">
-        <div class="mini-avatar">${avatarMarkup(item.member.avatar, item.member.name, "mini-avatar-image")}</div>
-        <div>
-          <div class="member-name">${item.member.name}</div>
-          <div class="member-meta">${item.bottles}/${item.member.goal} 瓶 · ${item.ml} ml · 還差 ${item.remaining} 瓶</div>
+  document.querySelector("#dashboardList").innerHTML = stats.map((item) => {
+    const marks = [
+      champion && item.member.id === champion.member.id ? "👑" : "",
+      needsWater && item.member.id === needsWater.member.id ? "💧" : ""
+    ].filter(Boolean).map((mark) => `<span class="person-mark">${mark}</span>`).join("");
+
+    return `
+      <article class="member-row">
+        <div class="member-row-main">
+          <div class="mini-avatar">${avatarMarkup(item.member.avatar, item.member.name, "mini-avatar-image")}</div>
+          <div>
+            <div class="member-name">${marks}${item.member.name}</div>
+            <div class="member-meta">${item.bottles}/${item.member.goal} 瓶 · ${item.ml} ml · 還差 ${item.remaining} 瓶</div>
+          </div>
         </div>
-      </div>
-      <div class="mini-progress"><span style="width:${item.progress * 100}%"></span></div>
-    </article>
-  `).join("");
+        <div class="mini-progress"><span style="width:${item.progress * 100}%"></span></div>
+      </article>
+    `;
+  }).join("");
 
   renderWeekBars();
 }
@@ -348,8 +355,11 @@ function formatCost(value) {
 
 function renderWeekBars() {
   const points = [];
-  const start = new Date(`${costStartDate}T00:00:00`);
+  const firstTrackedDate = new Date(`${costStartDate}T00:00:00`);
   const today = new Date(`${todayKey}T00:00:00`);
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - 6);
+  const start = weekStart > firstTrackedDate ? weekStart : firstTrackedDate;
   const dayCount = Math.max(1, Math.floor((today.getTime() - start.getTime()) / 86400000) + 1);
 
   for (let offset = 0; offset < dayCount; offset += 1) {
@@ -363,10 +373,13 @@ function renderWeekBars() {
   }
 
   const max = Math.max(...points.map((point) => point.bottles), 1);
-  document.querySelector("#weekBars").innerHTML = points.map((point) => `
+  const bars = document.querySelector("#weekBars");
+  bars.style.setProperty("--bar-count", points.length);
+  bars.dataset.dense = points.length > 10 ? "true" : "false";
+  bars.innerHTML = points.map((point) => `
     <div class="bar">
       <strong>${point.bottles}</strong>
-      <i style="height:${Math.max(8, (point.bottles / max) * 150)}px"></i>
+      <i style="height:${Math.max(10, (point.bottles / max) * 205)}px"></i>
       <span>${point.label}</span>
     </div>
   `).join("");

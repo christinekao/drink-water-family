@@ -396,6 +396,25 @@ h2 {
   margin-bottom: 16px;
 }
 
+.chart-card {
+  padding: 20px 16px 18px;
+  margin: 28px 0 16px;
+}
+
+.family-summary-card {
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.family-summary-card p {
+  font-size: 15px;
+}
+
+.family-summary-card strong {
+  margin: 7px 0 10px;
+  font-size: 38px;
+}
+
 .summary-card p,
 .chart-title span {
   color: var(--muted);
@@ -428,10 +447,31 @@ h2 {
 
 .summary-grid {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   color: var(--ink);
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 1000;
+}
+
+.summary-grid span {
+  display: grid;
+  gap: 3px;
+}
+
+.summary-grid b {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink);
+  font-size: 21px;
+  line-height: 1;
+}
+
+.person-mark {
+  display: inline-block;
+  margin-right: 4px;
+  transform: translateY(-1px);
 }
 
 .member-list,
@@ -462,6 +502,10 @@ h2 {
 }
 
 .member-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
   font-size: 23px;
   font-weight: 1000;
   color: var(--ink);
@@ -503,29 +547,31 @@ h2 {
 }
 
 .bars {
-  height: 190px;
+  width: 100%;
+  height: 250px;
   display: grid;
-  grid-template-columns: repeat(7, minmax(28px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(var(--bar-count, 7), minmax(0, 1fr));
+  gap: clamp(2px, 1.5vw, 7px);
   align-items: end;
-  margin-top: 16px;
-  overflow-x: auto;
+  margin-top: 14px;
+  overflow: hidden;
 }
 
 .bar {
-  min-width: 32px;
+  min-width: 0;
   display: grid;
   gap: 7px;
   justify-items: center;
 }
 
 .bar strong {
-  font-size: 14px;
+  font-size: clamp(10px, 3vw, 14px);
   font-weight: 1000;
 }
 
 .bar i {
   width: 100%;
+  min-width: 4px;
   min-height: 10px;
   border: 2px solid var(--line);
   border-radius: 10px 10px 4px 4px;
@@ -534,8 +580,14 @@ h2 {
 
 .bar span {
   color: var(--muted);
-  font-size: 13px;
+  font-size: clamp(8px, 2.8vw, 12px);
   font-weight: 1000;
+  white-space: nowrap;
+}
+
+.bars[data-dense="true"] .bar span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
 
 .history-row {
